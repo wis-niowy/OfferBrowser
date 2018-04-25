@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!-- Coordinator layout is the best one to set FAB in botoom-right corner ON a RecyclerView -->
+<android.support.design.widget.CoordinatorLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/relative_layout">
+
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/mainRecyclerViewer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="48dp"
+    android:clipToPadding="false"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true">
+
+</android.support.v7.widget.RecyclerView>
+
+</android.support.design.widget.CoordinatorLayout>

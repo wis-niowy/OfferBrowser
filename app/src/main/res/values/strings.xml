@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MobileApplication</string>
+    <string name="map_tab_name">Map</string>
+    <string name="result_list_tab_name">Result list</string>
+</resources>
