@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Created by Wisienka on 2018-04-22.
  */
 
-public class MapTabFragment extends Fragment implements OnMapReadyCallback {
+public class MapTabFragment extends /*SupportMap*/Fragment implements OnMapReadyCallback {
     private Context mContext;
     private SupportMapFragment supportMapFragment;
     private GoogleMap map;
