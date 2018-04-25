@@ -26,7 +26,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 return new MapTabFragment();
-                //return new SupportMapFragment();
             case 1:
                 return new RecyclerViewFragment();
             default:
