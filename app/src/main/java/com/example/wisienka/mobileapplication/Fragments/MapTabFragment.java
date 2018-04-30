@@ -39,8 +39,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     protected FloatingActionButton fab;
     private GoogleMap map;
     protected MapTabMode mode;
-    private static final Map<MapTabMode,MapTabMode> ModeMap = new HashMap<MapTabMode,MapTabMode>();
-    private static final Map<MapTabMode,Integer> IconMap = new HashMap<MapTabMode,Integer>();
+    private static Map<MapTabMode,MapTabMode> ModeMap;
+    private static Map<MapTabMode,Integer> IconMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,24 +60,32 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             ft.add(R.id.map_container, mapFragment, "mapFragment");
             ft.commit();
             fm.executePendingTransactions();
+
+            mapFragment.getMapAsync(this);
         }
-        mapFragment.getMapAsync(this);
 
-        ModeMap.put(MapTabMode.idleMode, MapTabMode.drawingAreaMode);
-        ModeMap.put(MapTabMode.drawingAreaMode, MapTabMode.idleMode);
-        IconMap.put(MapTabMode.idleMode, R.drawable.create_icon);
-        IconMap.put(MapTabMode.drawingAreaMode, R.drawable.done_icon);
 
-        fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mode = ModeMap.get(mode);
-                int icon_id = IconMap.get(mode);
-                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon_id));
-            }
-        });
-        fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
+        if (ModeMap == null || IconMap == null){
+            ModeMap = new HashMap<MapTabMode,MapTabMode>();
+            IconMap = new HashMap<MapTabMode,Integer>();
+            ModeMap.put(MapTabMode.idleMode, MapTabMode.drawingAreaMode);
+            ModeMap.put(MapTabMode.drawingAreaMode, MapTabMode.idleMode);
+            IconMap.put(MapTabMode.idleMode, R.drawable.create_icon);
+            IconMap.put(MapTabMode.drawingAreaMode, R.drawable.done_icon);
+        }
+        if (fab == null){
+            fab = view.findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mode = ModeMap.get(mode);
+                    int icon_id = IconMap.get(mode);
+                    fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon_id));
+                }
+            });
+            fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
+        }
+
     }
 
     @Override

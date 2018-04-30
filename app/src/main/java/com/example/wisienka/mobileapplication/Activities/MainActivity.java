@@ -21,17 +21,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        //recyclerFragment = new RecyclerViewFragment();
-        mainPageFragment = new MainPageFragment();
-        settingsFragment = new SettingsPreferenceFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (savedInstanceState == null){
-            // created for the first time
-            fragmentTransaction.add(R.id.activity_main_layout, mainPageFragment, "mainPageFragment");
-            fragmentTransaction.commit();
-            mainPageFragment.getFragmentManager().executePendingTransactions(); // force commit now
+            setContentView(R.layout.activity_main);
+            //recyclerFragment = new RecyclerViewFragment();
+            mainPageFragment = new MainPageFragment();
+            settingsFragment = new SettingsPreferenceFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            if (savedInstanceState == null){
+                // created for the first time
+                fragmentTransaction.add(R.id.activity_main_layout, mainPageFragment, "mainPageFragment");
+                fragmentTransaction.commit();
+                mainPageFragment.getFragmentManager().executePendingTransactions(); // force commit now
+            }
         }
+        int a = 0;
+
 //        Toolbar toolbar = (Toolbar) mainPageFragment.getView().findViewById(R.id.toolbar);
 ////        toolbar.setSubtitle("Test Subtitle");
 ////        toolbar.inflateMenu(R.menu.preference_menu);

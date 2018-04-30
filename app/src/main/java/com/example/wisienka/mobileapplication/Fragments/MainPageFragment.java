@@ -23,6 +23,8 @@ import com.example.wisienka.mobileapplication.R;
 
 public class MainPageFragment extends Fragment {
     Fragment settingsFragment;
+    ViewPager viewPager;
+    PagerAdapter adapter; // viewPager adapter
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,35 +42,35 @@ public class MainPageFragment extends Fragment {
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        //toolbar.setSubtitle("Test Subtitle");
-        //toolbar.inflateMenu(R.menu.preference_menu);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); // back arrow
+        if (savedInstanceState == null){
+            Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+            //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); // back arrow
 
-        settingsFragment = new SettingsPreferenceFragment();
+            settingsFragment = new SettingsPreferenceFragment();
 
-        final ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter
-                (getFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
+            viewPager = (ViewPager) view.findViewById(R.id.pager);
+            //necessarily getChildFragmentManager() has to be passed - not getFragmentManager() as it makes tab content disappear after page is restored
+            adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
+            viewPager.setAdapter(adapter);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
 
-            }
+                }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
 
-            }
-        });
+                }
+            });
+        }
 
         return view;
     }

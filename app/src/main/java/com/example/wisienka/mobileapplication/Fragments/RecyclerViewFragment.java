@@ -35,12 +35,14 @@ public class RecyclerViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recyclerview_layout, container, false);
 
+
+        // here fragment will be reading data from database each time its view is recreated
         List<ListElement> elements = new ArrayList<ListElement>();
-        for (int i = 0; i < 10; ++i){
+        for (int i = 0; i < 30; ++i){
             elements.add(new ListElement(this.getActivity().getApplicationContext()));
         }
 
-                // set up the RecyclerView
+        // set up the RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.mainRecyclerViewer);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext())); // context from current view (content_main) - NOT activity_main
         adapter = new RecyclerViewAdapter(view.getContext(), elements);
