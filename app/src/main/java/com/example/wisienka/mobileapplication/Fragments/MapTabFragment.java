@@ -3,6 +3,8 @@ package com.example.wisienka.mobileapplication.Fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,21 +15,28 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.wisienka.mobileapplication.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +50,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     protected MapTabMode mode;
     private static Map<MapTabMode,MapTabMode> ModeMap;
     private static Map<MapTabMode,Integer> IconMap;
+    private List<LatLng> currentlyDrawnPolygon;
+    private List<Polygon> drawnPolygons;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -62,8 +73,53 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             fm.executePendingTransactions();
 
             mapFragment.getMapAsync(this);
+
+            FrameLayout map_container = view.findViewById(R.id.map_layout);
+            map_container.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (mode == MapTabMode.idleMode)
+                        return false;
+
+                    float x = event.getX();
+                    float y = event.getY();
+
+                    int x_co = Math.round(x);
+                    int y_co = Math.round(y);
+
+                    Projection projection = map.getProjection();
+                    Point x_y_points = new Point(x_co, y_co);
+
+                    LatLng latLng = projection.fromScreenLocation(x_y_points);
+                    double latitude = latLng.latitude;
+
+                    double longitude = latLng.longitude;
+
+                    int eventaction = event.getAction();
+                    switch (eventaction) {
+                        case MotionEvent.ACTION_DOWN:
+                            // finger touches the screen
+                            currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            // finger moves on the screen
+                            currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            // finger leaves the screen
+                            v.performClick();
+                            Draw_Map();
+                            break;
+                    }
+
+                    return true;
+
+                }
+            });
         }
 
+        currentlyDrawnPolygon = new ArrayList<LatLng>();
+        drawnPolygons = new ArrayList<Polygon>();
 
         if (ModeMap == null || IconMap == null){
             ModeMap = new HashMap<MapTabMode,MapTabMode>();
@@ -85,6 +141,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             });
             fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
         }
+
+
 
     }
 
@@ -114,6 +172,17 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
         Log.v(LOGTAG, "Added Warsaw");
     }
 
+
+    private void Draw_Map() {
+        PolygonOptions rectOptions = new PolygonOptions();
+        rectOptions.addAll(currentlyDrawnPolygon);
+        rectOptions.strokeColor(Color.BLUE);
+        rectOptions.strokeWidth(7);
+        rectOptions.fillColor(Color.argb(70, 0, 255, 255));
+        currentlyDrawnPolygon.clear();
+        Polygon polygon = map.addPolygon(rectOptions);
+        drawnPolygons.add(polygon);
+    }
 
     public enum MapTabMode{
         idleMode,
