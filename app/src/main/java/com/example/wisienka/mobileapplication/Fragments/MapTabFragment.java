@@ -54,6 +54,11 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     private List<Polygon> drawnPolygons;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         //mContext = getActivity();
         mode = MapTabMode.idleMode;
@@ -73,50 +78,10 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             fm.executePendingTransactions();
 
             mapFragment.getMapAsync(this);
-
-            FrameLayout map_container = view.findViewById(R.id.map_layout);
-            map_container.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (mode == MapTabMode.idleMode)
-                        return false;
-
-                    float x = event.getX();
-                    float y = event.getY();
-
-                    int x_co = Math.round(x);
-                    int y_co = Math.round(y);
-
-                    Projection projection = map.getProjection();
-                    Point x_y_points = new Point(x_co, y_co);
-
-                    LatLng latLng = projection.fromScreenLocation(x_y_points);
-                    double latitude = latLng.latitude;
-
-                    double longitude = latLng.longitude;
-
-                    int eventaction = event.getAction();
-                    switch (eventaction) {
-                        case MotionEvent.ACTION_DOWN:
-                            // finger touches the screen
-                            currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            // finger moves on the screen
-                            currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            // finger leaves the screen
-                            v.performClick();
-                            Draw_Map();
-                            break;
-                    }
-
-                    return true;
-
-                }
-            });
         }
+
+        setDrawEventCapturerHandler(view);
+        initFloatingActionButton(view);
 
         currentlyDrawnPolygon = new ArrayList<LatLng>();
         drawnPolygons = new ArrayList<Polygon>();
@@ -129,20 +94,6 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             IconMap.put(MapTabMode.idleMode, R.drawable.create_icon);
             IconMap.put(MapTabMode.drawingAreaMode, R.drawable.done_icon);
         }
-        if (fab == null){
-            fab = view.findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mode = ModeMap.get(mode);
-                    int icon_id = IconMap.get(mode);
-                    fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon_id));
-                }
-            });
-            fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
-        }
-
-
 
     }
 
@@ -182,6 +133,63 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
         currentlyDrawnPolygon.clear();
         Polygon polygon = map.addPolygon(rectOptions);
         drawnPolygons.add(polygon);
+    }
+
+    private void setDrawEventCapturerHandler(View view){
+        FrameLayout map_container = view.findViewById(R.id.draw_event_capturer_layout);
+        map_container.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (mode == MapTabMode.idleMode)
+                    return false;
+
+                float x = event.getX();
+                float y = event.getY();
+
+                int x_co = Math.round(x);
+                int y_co = Math.round(y);
+
+                Projection projection = map.getProjection();
+                Point x_y_points = new Point(x_co, y_co);
+
+                LatLng latLng = projection.fromScreenLocation(x_y_points);
+                double latitude = latLng.latitude;
+
+                double longitude = latLng.longitude;
+
+                int eventaction = event.getAction();
+                switch (eventaction) {
+                    case MotionEvent.ACTION_DOWN:
+                        // finger touches the screen
+                        currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        // finger moves on the screen
+                        currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        // finger leaves the screen
+                        v.performClick();
+                        Draw_Map();
+                        break;
+                }
+
+                return true;
+
+            }
+        });
+    }
+    private void initFloatingActionButton(View view){
+        fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mode = ModeMap.get(mode);
+                int icon_id = IconMap.get(mode);
+                fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon_id));
+            }
+        });
+        fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
     }
 
     public enum MapTabMode{

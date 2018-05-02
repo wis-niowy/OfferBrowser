@@ -39,7 +39,7 @@ android:id="@+id/map_tab_layout">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/map_layout"
+        android:id="@+id/draw_event_capturer_layout"
         android:orientation="horizontal"/>
 
     <android.support.design.widget.FloatingActionButton

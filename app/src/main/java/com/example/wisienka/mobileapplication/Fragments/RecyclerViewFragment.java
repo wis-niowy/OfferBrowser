@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.wisienka.mobileapplication.Models.ListElement;
+import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
 import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
 
@@ -37,9 +37,9 @@ public class RecyclerViewFragment extends Fragment {
 
 
         // here fragment will be reading data from database each time its view is recreated
-        List<ListElement> elements = new ArrayList<ListElement>();
+        List<Offer> elements = new ArrayList<Offer>();
         for (int i = 0; i < 30; ++i){
-            elements.add(new ListElement(this.getActivity().getApplicationContext()));
+            elements.add(new Offer(this.getActivity().getApplicationContext()));
         }
 
         // set up the RecyclerView
