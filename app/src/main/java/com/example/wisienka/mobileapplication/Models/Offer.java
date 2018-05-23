@@ -2,11 +2,15 @@ package com.example.wisienka.mobileapplication.Models;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.wisienka.mobileapplication.R;
 import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by Wisienka on 2018-04-22.
@@ -18,12 +22,14 @@ public class Offer {
     private String typeOfOffer; // rent/buy
     private String address;
     private double price;
+    private LatLng location;
 
-    public Offer(Context mainContext){
+    public Offer(Context mainContext, LatLng loc){
         title = "TITLE";
         typeOfOffer = "wynajem";
         address = "ul. Emilii Plater 53";
         price = 2400;
+        location = loc;
     }
 
     public void BindData(RecyclerViewAdapter.ViewHolder holder, Context mainActivityContext) {
@@ -37,6 +43,11 @@ public class Offer {
         imageView.setImageDrawable(ContextCompat.getDrawable(mainActivityContext, R.drawable.no_offer_image_icon));
         final TextView priceView = (TextView)holder.getMyElementView().findViewById(R.id.offer_price);
         priceView.setText(String.valueOf(this.price));
+    }
+
+    public void SetMarker(GoogleMap map){
+        map.addMarker(new MarkerOptions().position(this.getLocation()).title(this.getTitle()));
+        Log.v("Offer: ", "Added " + this.getTitle());
     }
 
     public String getTitle() {
@@ -69,6 +80,14 @@ public class Offer {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public LatLng getLocation() {
+        return location;
+    }
+
+    public void setLocation(LatLng location) {
+        this.location = location;
     }
 
 }

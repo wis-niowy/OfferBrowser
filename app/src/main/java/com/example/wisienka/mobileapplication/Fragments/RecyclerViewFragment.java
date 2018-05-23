@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
 import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class RecyclerViewFragment extends Fragment {
         // here fragment will be reading data from database each time its view is recreated
         List<Offer> elements = new ArrayList<Offer>();
         for (int i = 0; i < 30; ++i){
-            elements.add(new Offer(this.getActivity().getApplicationContext()));
+            elements.add(new Offer(this.getActivity().getApplicationContext(), new LatLng(0.0, 0.0)));
         }
 
         // set up the RecyclerView

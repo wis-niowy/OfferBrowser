@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.wisienka.mobileapplication.Helpers.OfferBrowserAsyncTask;
+import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +35,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +55,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     private static Map<MapTabMode,MapTabMode> ModeMap;
     private static Map<MapTabMode,Integer> IconMap;
     private List<LatLng> currentlyDrawnPolygon;
+    private Polyline currentPolyline;
     private List<Polygon> drawnPolygons;
 
     @Override
@@ -115,24 +120,44 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(warsaw)             // Sets the center of the map to Mountain View
                 .zoom(12)                    // Sets the zoom
-                .bearing(90)                // Sets the orientation of the camera to east
+                .bearing(0)                // Sets the orientation of the camera to east
                 .tilt(30)                   // Sets the tilt of the camera to 30 degrees
                 .build();                   // Creates a CameraPosition from the builder
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-        Log.v(LOGTAG, "Added Warsaw");
     }
 
+    private void updateCurrentPolyline(){
+        if (currentPolyline != null){
+            currentPolyline.remove();
+        }
+        currentPolyline = map.addPolyline(new PolylineOptions()
+                .addAll(currentlyDrawnPolygon)
+                .color(Color.BLUE)
+                .width(7)
+        );
+    }
+    private void drawCurrentPolygon(){
+        currentPolyline.remove();
+        Polygon polygon = map.addPolygon(new PolygonOptions()
+                .addAll(currentlyDrawnPolygon)
+                .strokeColor(Color.BLUE)
+                .strokeWidth(7)
+                .fillColor(Color.argb(70, 0, 255, 255)));
 
-    private void Draw_Map() {
-        PolygonOptions rectOptions = new PolygonOptions();
-        rectOptions.addAll(currentlyDrawnPolygon);
-        rectOptions.strokeColor(Color.BLUE);
-        rectOptions.strokeWidth(7);
-        rectOptions.fillColor(Color.argb(70, 0, 255, 255));
-        currentlyDrawnPolygon.clear();
-        Polygon polygon = map.addPolygon(rectOptions);
+
         drawnPolygons.add(polygon);
+        currentlyDrawnPolygon.clear();
+    }
+    private void Draw_Map(MotionEvent action) {
+
+        switch (action.getAction()){
+            case MotionEvent.ACTION_MOVE:
+                updateCurrentPolyline();
+                break;
+            case MotionEvent.ACTION_UP:
+                drawCurrentPolygon();
+                break;
+        }
     }
 
     private void setDrawEventCapturerHandler(View view){
@@ -166,11 +191,12 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
                     case MotionEvent.ACTION_MOVE:
                         // finger moves on the screen
                         currentlyDrawnPolygon.add(new LatLng(latitude, longitude));
+                        Draw_Map(event);
                         break;
                     case MotionEvent.ACTION_UP:
                         // finger leaves the screen
-                        v.performClick();
-                        Draw_Map();
+                        //v.performClick();
+                        Draw_Map(event);
                         break;
                 }
 
@@ -187,9 +213,64 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
                 mode = ModeMap.get(mode);
                 int icon_id = IconMap.get(mode);
                 fab.setImageDrawable(ContextCompat.getDrawable(getContext(), icon_id));
+                if (mode == MapTabMode.idleMode){
+                    browseAccessibleOffers();
+                }
             }
         });
         fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.create_icon));
+    }
+
+
+    /**
+     *  Method that starts asyncTask responsible for filtering out offers by drawn hulls
+    */
+    private void browseAccessibleOffers(){
+        new OfferBrowserAsyncTask(this).execute();
+    }
+
+    /**
+     * Called by OfferBrowserAsyncTask in order to update visible offer markers
+     */
+    public void updateMapState(List<Offer> offerList){
+        double averageLat = 0.0, averageLong = 0.0;
+        for (Offer offer : offerList){
+            offer.SetMarker(map);
+            averageLat += offer.getLocation().latitude;
+            averageLong += offer.getLocation().longitude;
+        }
+        averageLat /= offerList.size();
+        averageLong /= offerList.size();
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(/*new LatLng(averageLat, averageLong)*/new LatLng(52.237049,21.017532))    // Sets the center of the map
+                .zoom(10)                                       // Sets the zoom
+                .bearing(0)                                    // Sets the orientation of the camera to east
+                .tilt(15)                                       // Sets the tilt of the camera to 30 degrees
+                .build();                                       // Creates a CameraPosition from the builder
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+
+    public Polygon[] getDrawnPolygons() {
+        return drawnPolygons.toArray(new Polygon[drawnPolygons.size()]);
+    }
+
+    public List<LatLng[]> getDrawnPolygonsPointsCopy(){
+        List<LatLng[]> copyList = new ArrayList<LatLng[]>();
+        for (Polygon p : drawnPolygons){
+            copyList.add(getPolygonPointsCopy(p));
+        }
+        return copyList;
+    }
+
+    private LatLng[] getPolygonPointsCopy(Polygon p){
+        List<LatLng> originalList = p.getPoints();
+        List<LatLng> copyList = new ArrayList<LatLng>();
+        for (LatLng c : originalList){
+            copyList.add(new LatLng(c.latitude, c.longitude));
+        }
+        return copyList.toArray(new LatLng[copyList.size()]);
     }
 
     public enum MapTabMode{
