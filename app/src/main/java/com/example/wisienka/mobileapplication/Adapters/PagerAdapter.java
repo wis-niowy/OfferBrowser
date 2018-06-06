@@ -14,10 +14,14 @@ import com.example.wisienka.mobileapplication.Fragments.RecyclerViewFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
+    Fragment mapTabFragment;
+    Fragment recyclerViewFragment;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, Fragment... fragments) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        mapTabFragment = fragments[0];
+        recyclerViewFragment = fragments[1];
     }
 
     @Override
@@ -25,9 +29,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                return new MapTabFragment();
+                return mapTabFragment;
             case 1:
-                return new RecyclerViewFragment();
+                return recyclerViewFragment;
             default:
                 return null;
         }

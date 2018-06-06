@@ -37,11 +37,10 @@ public class RecyclerViewFragment extends Fragment {
         View view = inflater.inflate(R.layout.recyclerview_layout, container, false);
 
 
-        // here fragment will be reading data from database each time its view is recreated
         List<Offer> elements = new ArrayList<Offer>();
-        for (int i = 0; i < 30; ++i){
-            elements.add(new Offer(this.getActivity().getApplicationContext(), new LatLng(0.0, 0.0)));
-        }
+//        for (int i = 0; i < 30; ++i){
+//            elements.add(new Offer(this.getActivity().getApplicationContext(), new LatLng(0.0, 0.0)));
+//        }
 
         // set up the RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.mainRecyclerViewer);
@@ -56,5 +55,9 @@ public class RecyclerViewFragment extends Fragment {
 //        }));
 
         return view;
+    }
+
+    public void updateRecyclerState(List<Offer> offerList){
+        adapter.ClearDataList(offerList);
     }
 }

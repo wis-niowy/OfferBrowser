@@ -71,4 +71,12 @@ public class RecyclerViewAdapter  extends RecyclerView.Adapter<RecyclerViewAdapt
     Offer getItem(int id) {
         return mData.get(id);
     }
+
+    public void ClearDataList(List<Offer> offersList){
+        mData.clear();
+        if (offersList != null){
+            mData.addAll(offersList);
+            notifyDataSetChanged();
+        }
+    }
 }

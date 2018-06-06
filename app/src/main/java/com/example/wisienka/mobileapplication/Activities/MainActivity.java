@@ -10,8 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.wisienka.mobileapplication.Fragments.MainPageFragment;
+import com.example.wisienka.mobileapplication.Fragments.MapTabFragment;
+import com.example.wisienka.mobileapplication.Fragments.RecyclerViewFragment;
 import com.example.wisienka.mobileapplication.Fragments.SettingsPreferenceFragment;
+import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //Fragment recyclerFragment;
@@ -65,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return false;
+    }
+
+    public void UpdateOffersContainers(List<Offer> offersList){
+        ((MainPageFragment)mainPageFragment).UpdateOffersContainers(offersList);
     }
 
     private void SettingsPreferenceFragmentClick(){

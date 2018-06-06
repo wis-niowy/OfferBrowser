@@ -115,7 +115,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
         Log.v(LOGTAG, "map is ready");
 
         LatLng warsaw = new LatLng(52.237049,21.017532);
-        map.addMarker(new MarkerOptions().position(warsaw).title("Marker in Warsaw"));
+        //map.addMarker(new MarkerOptions().position(warsaw).title("Marker in Warsaw"));
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(warsaw)             // Sets the center of the map to Mountain View

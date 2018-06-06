@@ -15,14 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.wisienka.mobileapplication.Adapters.PagerAdapter;
+import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
+import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
+
+import java.util.List;
 
 /**
  * Created by Wisienka on 2018-04-22.
  */
 
 public class MainPageFragment extends Fragment {
-    Fragment settingsFragment;
+    //Fragment settingsFragment;
+    Fragment mapTabFragment;
+    Fragment recyclerViewFragment;
+
     ViewPager viewPager;
     PagerAdapter adapter; // viewPager adapter
 
@@ -47,11 +54,13 @@ public class MainPageFragment extends Fragment {
             ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
             //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); // back arrow
 
-            settingsFragment = new SettingsPreferenceFragment();
+            //settingsFragment = new SettingsPreferenceFragment();
+            mapTabFragment = new MapTabFragment();
+            recyclerViewFragment = new RecyclerViewFragment();
 
             viewPager = (ViewPager) view.findViewById(R.id.pager);
             //necessarily getChildFragmentManager() has to be passed - not getFragmentManager() as it makes tab content disappear after page is restored
-            adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
+            adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount(), mapTabFragment, recyclerViewFragment);
             viewPager.setAdapter(adapter);
             viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -85,23 +94,28 @@ public class MainPageFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                SettingsPreferenceFragmentClick();
-                return true;
-            default:
-                //return super.onOptionsItemSelected(item);
-                break;
-        }
-        return false;
+    public void UpdateOffersContainers(List<Offer> offersList){
+        ((MapTabFragment)mapTabFragment).updateMapState(offersList);
+        ((RecyclerViewFragment)recyclerViewFragment).updateRecyclerState(offersList);
     }
 
-    private void SettingsPreferenceFragmentClick(){
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_layout, settingsFragment).addToBackStack(null).commit();
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle item selection
+//        switch (item.getItemId()) {
+//            case R.id.action_settings:
+//                SettingsPreferenceFragmentClick();
+//                return true;
+//            default:
+//                //return super.onOptionsItemSelected(item);
+//                break;
+//        }
+//        return false;
+//    }
+//
+//    private void SettingsPreferenceFragmentClick(){
+//        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_layout, settingsFragment).addToBackStack(null).commit();
+//    }
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

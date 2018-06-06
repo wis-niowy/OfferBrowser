@@ -19,24 +19,40 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class Offer {
 
     private String title;
-    private String typeOfOffer; // rent/buy
-    private String address;
+    private double area; // surface of a flat
+    private int rooms; // number of rooms
+    private String address; // district
     private double price;
     private LatLng location;
+    private String pic_url;
+    private String offer_url;
 
     public Offer(Context mainContext, LatLng loc){
         title = "TITLE";
-        typeOfOffer = "wynajem";
-        address = "ul. Emilii Plater 53";
+        area = 34.5;
+        rooms = 3;
+        address = "Bemowo";
         price = 2400;
         location = loc;
+    }
+
+    public Offer(String title, double area, int rooms, String address, double price, String pic_url, String offer_url) {
+        this.title = title;
+        this.area = area;
+        this.rooms = rooms;
+        this.address = address;
+        this.price = price;
+        this.pic_url = pic_url;
+        this.offer_url = offer_url;
     }
 
     public void BindData(RecyclerViewAdapter.ViewHolder holder, Context mainActivityContext) {
         final TextView titleView = (TextView)holder.getMyElementView().findViewById(R.id.offer_title);
         titleView.setText(this.title);
-        final TextView typeView = (TextView)holder.getMyElementView().findViewById(R.id.type_of_offer);
-        typeView.setText(this.typeOfOffer);
+        final TextView areaView = (TextView)holder.getMyElementView().findViewById(R.id.flat_area);
+        areaView.setText(String.valueOf(this.area));
+        final TextView roomView = (TextView)holder.getMyElementView().findViewById(R.id.rooms_number);
+        roomView.setText(String.valueOf(this.rooms));
         final TextView addressView = (TextView)holder.getMyElementView().findViewById(R.id.offer_address);
         addressView.setText(this.address);
         final ImageView imageView = (ImageView)holder.getMyElementView().findViewById(R.id.offer_picture);
@@ -46,8 +62,10 @@ public class Offer {
     }
 
     public void SetMarker(GoogleMap map){
-        map.addMarker(new MarkerOptions().position(this.getLocation()).title(this.getTitle()));
-        Log.v("Offer: ", "Added " + this.getTitle());
+        if (location != null) {
+            map.addMarker(new MarkerOptions().position(this.getLocation()).title(this.getTitle()));
+            Log.v("Offer: ", "Added " + this.getTitle());
+        }
     }
 
     public String getTitle() {
@@ -58,12 +76,21 @@ public class Offer {
         this.title = title;
     }
 
-    public String getTypeOfOffer() {
-        return typeOfOffer;
+
+    public double getArea() {
+        return area;
     }
 
-    public void setTypeOfOffer(String typeOfOffer) {
-        this.typeOfOffer = typeOfOffer;
+    public void setArea(double area) {
+        this.area = area;
+    }
+
+    public int getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(int rooms) {
+        this.rooms = rooms;
     }
 
     public String getAddress() {

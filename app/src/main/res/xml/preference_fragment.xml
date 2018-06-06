@@ -3,12 +3,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="FOO">
+        android:title="@string/filter_pref_section">
 
-        <CheckBoxPreference
-            android:key="checkBoxPrefSortByTaskName"
-            android:title="check it out"
-            android:summary="click this little box"/>
+        <!--<com.example.wisienka.mobileapplication.Fragments.IntervalDialogPreference-->
+            <!--android:title="@string/title"-->
+            <!--android:dialogMessage="@string/lite"-->
+            <!--android:negativeButtonText="test"/>-->
+
+        <EditTextPreference android:title="Price from"
+            android:key="price_from"
+            android:summary="Please provide price from ... "
+            android:defaultValue="0"/>
+        <EditTextPreference android:title="Price to"
+            android:key="price_to"
+            android:summary="Please provide price to ... "
+            android:defaultValue="100000"/>
+        <EditTextPreference android:title="Area surface from ..."
+            android:key="area_from"
+            android:summary="Please provide area surface from ... (m^2) "
+            android:defaultValue="0"/>
+        <EditTextPreference android:title="Area surface to ..."
+            android:key="area_to"
+            android:summary="Please provide area surface to ... (m^2)"
+            android:defaultValue="1000"/>
+        <EditTextPreference android:title="Numbers of rooms from"
+            android:key="rooms_from"
+            android:summary="Please provide numbers of rooms from ... "
+            android:defaultValue="1"/>
+        <EditTextPreference android:title="Numbers of rooms to"
+            android:key="rooms_to"
+            android:summary="Please provide numbers of rooms to ..."
+            android:defaultValue="10"/>
+        <EditTextPreference android:title="District"
+            android:key="district"
+            android:summary="Please provide district name ... "
+            android:defaultValue="Śródmieście"/>
 
     </PreferenceCategory>
 
