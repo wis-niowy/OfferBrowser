@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.wisienka.mobileapplication.Adapters.PagerAdapter;
 import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
+import com.example.wisienka.mobileapplication.Helpers.OfferBrowserAsyncTask;
 import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
 
@@ -26,6 +27,7 @@ import java.util.List;
  */
 
 public class MainPageFragment extends Fragment {
+
     //Fragment settingsFragment;
     Fragment mapTabFragment;
     Fragment recyclerViewFragment;
@@ -97,6 +99,14 @@ public class MainPageFragment extends Fragment {
     public void UpdateOffersContainers(List<Offer> offersList){
         ((MapTabFragment)mapTabFragment).updateMapState(offersList);
         ((RecyclerViewFragment)recyclerViewFragment).updateRecyclerState(offersList);
+    }
+
+    public void runAsyncTask(){
+        new OfferBrowserAsyncTask(this).execute();
+    }
+
+    public MapTabFragment getMapTabFragment() {
+        return (MapTabFragment)mapTabFragment;
     }
 
 //    @Override

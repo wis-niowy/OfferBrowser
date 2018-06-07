@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.wisienka.mobileapplication.Activities.MainActivity;
 import com.example.wisienka.mobileapplication.Helpers.OfferBrowserAsyncTask;
 import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
@@ -100,6 +101,11 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             IconMap.put(MapTabMode.drawingAreaMode, R.drawable.done_icon);
         }
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override
@@ -226,7 +232,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
      *  Method that starts asyncTask responsible for filtering out offers by drawn hulls
     */
     private void browseAccessibleOffers(){
-        new OfferBrowserAsyncTask(this).execute();
+        //new OfferBrowserAsyncTask(this).execute();
+        ((MainActivity)getActivity()).getMainPageFragment().runAsyncTask();
     }
 
     /**

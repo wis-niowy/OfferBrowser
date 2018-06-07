@@ -19,6 +19,7 @@ import com.example.wisienka.mobileapplication.R;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
     //Fragment recyclerFragment;
     Fragment mainPageFragment;
     Fragment settingsFragment;
@@ -78,5 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void SettingsPreferenceFragmentClick(){
         getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_layout, settingsFragment).addToBackStack(null).commit();
+    }
+
+    public MainPageFragment getMainPageFragment() {
+        return (MainPageFragment)mainPageFragment;
     }
 }

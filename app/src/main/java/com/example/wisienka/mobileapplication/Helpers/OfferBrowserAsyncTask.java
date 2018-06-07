@@ -6,6 +6,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
 
 import com.example.wisienka.mobileapplication.Activities.MainActivity;
+import com.example.wisienka.mobileapplication.Fragments.MainPageFragment;
 import com.example.wisienka.mobileapplication.Fragments.MapTabFragment;
 import com.example.wisienka.mobileapplication.Models.Offer;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
 
-    private MapTabFragment fragment;
+    private MainPageFragment fragment;
     //private MainActivity activity;
     private List<Offer> offerList;
     private List<LatLng[]> hulls;
@@ -36,7 +37,7 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
     private String district;
 
 
-    public OfferBrowserAsyncTask(MapTabFragment fr){
+    public OfferBrowserAsyncTask(MainPageFragment fr){
         fragment = fr;
         //activity = (MainActivity)fr.getActivity();
         offerList = new ArrayList<Offer>();
@@ -44,7 +45,7 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPreExecute (){
-        hulls = fragment.getDrawnPolygonsPointsCopy();
+        hulls = fragment.getMapTabFragment().getDrawnPolygonsPointsCopy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(fragment.getActivity());
         district = sp.getString("district", "");
         price_from = Double.valueOf(sp.getString("price_from", "0"));
@@ -74,7 +75,8 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
     }
     @Override
     protected void onPostExecute(Void results) {
-        ((MainActivity)fragment.getActivity()).UpdateOffersContainers(offerList);
+        //((MainActivity)fragment.getActivity()).UpdateOffersContainers(offerList);
+        fragment.UpdateOffersContainers(offerList);
     }
 
     private void FilterOffers(Offer[] offersFromDB){
@@ -91,12 +93,12 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private Offer[] GetExampleList(){
         List<Offer> tempList = new ArrayList<Offer>();
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.230, 21.000)));
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.235, 21.005)));
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.125, 20.915)));
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.240, 20.910)));
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.245, 21.010)));
-        tempList.add(new Offer(fragment.getActivity().getApplicationContext(), new LatLng(52.250, 21.015)));
+        tempList.add(new Offer(null, new LatLng(52.230, 21.000)));
+        tempList.add(new Offer(null, new LatLng(52.235, 21.005)));
+        tempList.add(new Offer(null, new LatLng(52.125, 20.915)));
+        tempList.add(new Offer(null, new LatLng(52.240, 20.910)));
+        tempList.add(new Offer(null, new LatLng(52.245, 21.010)));
+        tempList.add(new Offer(null, new LatLng(52.250, 21.015)));
 
         return tempList.toArray(new Offer[tempList.size()]);
     }
