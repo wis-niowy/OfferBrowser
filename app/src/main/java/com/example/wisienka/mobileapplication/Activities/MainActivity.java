@@ -1,6 +1,7 @@
 package com.example.wisienka.mobileapplication.Activities;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,19 +34,29 @@ public class MainActivity extends AppCompatActivity {
             mainPageFragment = new MainPageFragment();
             settingsFragment = new SettingsPreferenceFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            if (savedInstanceState == null){
-                // created for the first time
-                fragmentTransaction.add(R.id.activity_main_layout, mainPageFragment, "mainPageFragment");
-                fragmentTransaction.commit();
-                mainPageFragment.getFragmentManager().executePendingTransactions(); // force commit now
-            }
-        }
-        int a = 0;
+
+            fragmentTransaction.add(R.id.activity_main_layout, mainPageFragment, "mainPageFragment");
+            fragmentTransaction.commit();
+            mainPageFragment.getFragmentManager().executePendingTransactions(); // force commit now
+        } //else {
+//            mainPageFragment = getSupportFragmentManager().getFragment(savedInstanceState, "mainPageFragment");
+//            settingsFragment = getSupportFragmentManager().getFragment(savedInstanceState, "settingsFragment");
+//        }
+
 
 //        Toolbar toolbar = (Toolbar) mainPageFragment.getView().findViewById(R.id.toolbar);
 ////        toolbar.setSubtitle("Test Subtitle");
 ////        toolbar.inflateMenu(R.menu.preference_menu);
 //        setSupportActionBar(toolbar);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, "mainPageFragment", mainPageFragment);
+        getSupportFragmentManager().putFragment(outState, "settingsFragment", settingsFragment);
     }
 
     /**
@@ -66,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 SettingsPreferenceFragmentClick();
                 return true;
+            case R.id.action_reset:
+                ((MainPageFragment)mainPageFragment).ClearOffersContainers();
+                return true;
             default:
                 //return super.onOptionsItemSelected(item);
                 break;
@@ -84,4 +98,22 @@ public class MainActivity extends AppCompatActivity {
     public MainPageFragment getMainPageFragment() {
         return (MainPageFragment)mainPageFragment;
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        // if there is a fragment and the back stack of this fragment is not empty,
+//        // then emulate 'onBackPressed' behaviour, because in default, it is not working
+//        FragmentManager fm = getSupportFragmentManager();
+//        int count = fm.getBackStackEntryCount();
+//        for (Fragment frag : fm.getFragments()) {
+//            if (frag.isVisible()) {
+//                FragmentManager childFm = frag.getChildFragmentManager();
+//                if (childFm.getBackStackEntryCount() > 0) {
+//                    childFm.popBackStack();
+//                    return;
+//                }
+//            }
+//        }
+//        super.onBackPressed();
+//    }
 }

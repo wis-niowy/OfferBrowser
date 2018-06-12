@@ -14,7 +14,6 @@ import com.example.wisienka.mobileapplication.R;
 
 import java.util.List;
 
-
 /**
  * Created by Wisienka on 2018-04-22.
  */
@@ -74,6 +73,7 @@ public class RecyclerViewAdapter  extends RecyclerView.Adapter<RecyclerViewAdapt
 
     public void ClearDataList(List<Offer> offersList){
         mData.clear();
+        notifyDataSetChanged();
         if (offersList != null){
             mData.addAll(offersList);
             notifyDataSetChanged();

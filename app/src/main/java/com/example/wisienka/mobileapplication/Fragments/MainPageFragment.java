@@ -1,5 +1,6 @@
 package com.example.wisienka.mobileapplication.Fragments;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.example.wisienka.mobileapplication.Helpers.OfferBrowserAsyncTask;
 import com.example.wisienka.mobileapplication.Models.Offer;
 import com.example.wisienka.mobileapplication.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +36,10 @@ public class MainPageFragment extends Fragment {
 
     ViewPager viewPager;
     PagerAdapter adapter; // viewPager adapter
+
+    public List<Offer> offersList;
+
+    private boolean wasCreated = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,40 +56,62 @@ public class MainPageFragment extends Fragment {
 
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); // back arrow
 
-        if (savedInstanceState == null){
-            Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-            ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-            //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true); // back arrow
+        if (/*savedInstanceState == null ||*/ !wasCreated){
 
             //settingsFragment = new SettingsPreferenceFragment();
             mapTabFragment = new MapTabFragment();
             recyclerViewFragment = new RecyclerViewFragment();
+            offersList = new ArrayList<Offer>();
 
-            viewPager = (ViewPager) view.findViewById(R.id.pager);
-            //necessarily getChildFragmentManager() has to be passed - not getFragmentManager() as it makes tab content disappear after page is restored
-            adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount(), mapTabFragment, recyclerViewFragment);
-            viewPager.setAdapter(adapter);
-            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    viewPager.setCurrentItem(tab.getPosition());
-                }
+        } //else {
+//            mapTabFragment = getActivity().getSupportFragmentManager().getFragment(savedInstanceState, "mapTabFragment");
+//            recyclerViewFragment = getActivity().getSupportFragmentManager().getFragment(savedInstanceState, "recyclerViewFragment");
+//        }
 
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
+        viewPager = (ViewPager) view.findViewById(R.id.pager);
+        //necessarily getChildFragmentManager() has to be passed - not getFragmentManager() as it makes tab content disappear after page is restored
+        adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount(), mapTabFragment, recyclerViewFragment);
+        viewPager.setAdapter(adapter);
 
-                }
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
 
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-                }
-            });
-        }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        wasCreated = true;
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's instance
+        getActivity().getSupportFragmentManager().putFragment(outState, "mapTabFragment", mapTabFragment);
+        getActivity().getSupportFragmentManager().putFragment(outState, "recyclerViewFragment", recyclerViewFragment);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     /**
@@ -96,7 +124,15 @@ public class MainPageFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    public void UpdateOffersContainers(List<Offer> offersList){
+    public void UpdateOffersContainers(List<Offer> list){
+        offersList.clear();
+        offersList.addAll(list);
+        ((MapTabFragment)mapTabFragment).updateMapState(offersList);
+        ((RecyclerViewFragment)recyclerViewFragment).updateRecyclerState(offersList);
+    }
+
+    public void ClearOffersContainers(){
+        offersList.clear();
         ((MapTabFragment)mapTabFragment).updateMapState(offersList);
         ((RecyclerViewFragment)recyclerViewFragment).updateRecyclerState(offersList);
     }

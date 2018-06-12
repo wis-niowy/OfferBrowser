@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.wisienka.mobileapplication.Activities.MainActivity;
 import com.example.wisienka.mobileapplication.Fragments.MainPageFragment;
@@ -13,6 +14,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.maps.android.PolyUtil;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +67,7 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
         Offer[] offersFromDB = GetExampleList2();
         FilterOffers(offersFromDB);
         // TODO: here result offers will be filtered by hulls
-
+        List<String> tempList = dbConnect("worstserverever.database.windows.net", "1443", "AgathaChristie", "Hakerman3.5XD");
 
             // Escape early if cancel() is called
         if (isCancelled()) return null;
@@ -85,7 +90,8 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
             for (LatLng[] hull : hulls){
                 List<LatLng> points = Arrays.asList(hull);
                 if (PolyUtil.containsLocation(offer.getLocation(), points, false) || ValidateOffer(offer)){
-                    offerList.add(offer);
+                    if (!offerList.contains(offer))
+                        offerList.add(offer);
                 }
             }
         }
@@ -126,5 +132,26 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
                 !offer.getAddress().equals(district))
             return false;
         else return true;
+    }
+
+    public List<String> dbConnect(String Host, String Port, String db_userid, String db_password) {
+        List<String> Db_list = new ArrayList<String>();
+        try {
+            String ConnectionString = "jdbc:jtds:sqlserver://" + Host + ":" + Port + "/OfferBrowser";
+            Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
+            Connection conn = DriverManager.getConnection(ConnectionString, db_userid, db_password);
+            Log.v("DATABASE: ", "connected!");
+            Statement statement = conn.createStatement();
+            String queryString = "select Title from dbo.MainTable";
+            ResultSet rs = statement.executeQuery(queryString);
+            while (rs.next()) {
+                Db_list.add(rs.getString(1));
+            }
+        } catch (Exception e) {
+            Db_list.add("Error");
+            Log.v("DATABASE: ", "connection failed!");
+            e.printStackTrace();
+        }
+        return Db_list;
     }
 }

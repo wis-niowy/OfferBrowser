@@ -59,6 +59,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     private Polyline currentPolyline;
     private List<Polygon> drawnPolygons;
 
+    private boolean wasCreated = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,13 +86,13 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             fm.executePendingTransactions();
 
             mapFragment.getMapAsync(this);
+            drawnPolygons = new ArrayList<Polygon>();
         }
 
         setDrawEventCapturerHandler(view);
         initFloatingActionButton(view);
 
         currentlyDrawnPolygon = new ArrayList<LatLng>();
-        drawnPolygons = new ArrayList<Polygon>();
 
         if (ModeMap == null || IconMap == null){
             ModeMap = new HashMap<MapTabMode,MapTabMode>();
@@ -101,6 +103,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             IconMap.put(MapTabMode.drawingAreaMode, R.drawable.done_icon);
         }
 
+        wasCreated = true;
     }
 
     @Override
@@ -241,6 +244,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
      */
     public void updateMapState(List<Offer> offerList){
         double averageLat = 0.0, averageLong = 0.0;
+        map.clear();
         for (Offer offer : offerList){
             offer.SetMarker(map);
             averageLat += offer.getLocation().latitude;
