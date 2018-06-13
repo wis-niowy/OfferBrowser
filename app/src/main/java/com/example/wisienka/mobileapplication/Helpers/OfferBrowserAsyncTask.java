@@ -1,6 +1,7 @@
 package com.example.wisienka.mobileapplication.Helpers;
 
 import android.content.SharedPreferences;
+import android.location.Address;
 import android.os.AsyncTask;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
@@ -64,10 +65,12 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... args) {
         // TODO: here Database related objects will be used in order to retrive offers settled in surrounding of drawn hulls(Polygon)
         //Offer[] offersFromDB = getFromDB();
-        Offer[] offersFromDB = GetExampleList2();
-        FilterOffers(offersFromDB);
+        //Offer[] offersFromDB = GetExampleList2();
+
         // TODO: here result offers will be filtered by hulls
-        List<String> tempList = dbConnect("worstserverever.database.windows.net", "1443", "AgathaChristie", "Hakerman3.5XD");
+        Offer[] offersFromDB = dbConnect("worstserverever.database.windows.net", "1433", "AgathaChristie", "Hakerman3.5XD");
+
+        FilterOffers(offersFromDB);
 
             // Escape early if cancel() is called
         if (isCancelled()) return null;
@@ -89,7 +92,7 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
         for (Offer offer : offersFromDB){
             for (LatLng[] hull : hulls){
                 List<LatLng> points = Arrays.asList(hull);
-                if (PolyUtil.containsLocation(offer.getLocation(), points, false) || ValidateOffer(offer)){
+                if (ValidateOffer(offer) || offer.getLocation() != null && PolyUtil.containsLocation(offer.getLocation(), points, false)){
                     if (!offerList.contains(offer))
                         offerList.add(offer);
                 }
@@ -134,24 +137,44 @@ public class OfferBrowserAsyncTask extends AsyncTask<Void, Void, Void> {
         else return true;
     }
 
-    public List<String> dbConnect(String Host, String Port, String db_userid, String db_password) {
-        List<String> Db_list = new ArrayList<String>();
+    public Offer[] dbConnect(String Host, String Port, String db_userid, String db_password) {
+        List<Offer> Db_list = new ArrayList<Offer>();
         try {
             String ConnectionString = "jdbc:jtds:sqlserver://" + Host + ":" + Port + "/OfferBrowser";
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             Connection conn = DriverManager.getConnection(ConnectionString, db_userid, db_password);
             Log.v("DATABASE: ", "connected!");
             Statement statement = conn.createStatement();
-            String queryString = "select Title from dbo.MainTable";
+            String queryString = "SELECT Title, Area, Rooms, District, Price, pt.URL, mt.URL ";
+            queryString += "FROM dbo.MainTable mt left join ( " +
+                                "select f.[Key], f.URL, f.offerKey " +
+                                "from ( " +
+                                    "select min([Key]) 'Key', offerKey " +
+                                    "from dbo.PicturesTable " +
+                                    "group by offerKey" +
+                                ") as x inner join dbo.PicturesTable f on f.[Key] = x.[Key] and f.offerKey = x.offerKey) pt on mt.[Key] = pt.offerKey ";
+            queryString += "WHERE Price BETWEEN " + price_from + " AND " + price_to + " AND " +
+                    "Area BETWEEN " + area_from + " AND " + area_to + " AND " +
+                    "Rooms BETWEEN " + rooms_from + " AND " + rooms_to + " AND " +
+                    "District LIKE \'" + district + "\'";// + " COLLATE SQL_Polish_Cp1250_CI_AS_KI_WI";
             ResultSet rs = statement.executeQuery(queryString);
             while (rs.next()) {
-                Db_list.add(rs.getString(1));
+                //Db_list.add(rs.getString(0));
+                String title = rs.getString(1);
+                double area = Double.valueOf(rs.getString(2));
+                int rooms = Integer.valueOf(rs.getString(3));
+                String address = rs.getString(4); // district!!!
+                double price = Double.valueOf(rs.getString(5));
+                String pic_url = rs.getString(6);
+                String offer_url = rs.getString(7);
+                Db_list.add(new Offer(title, area, rooms, address, price, pic_url, offer_url));
+                //Db_list.add(new Offer(title, 0, 0, null, 0.0, "", ""));
             }
         } catch (Exception e) {
-            Db_list.add("Error");
+            //Db_list.add("Error");
             Log.v("DATABASE: ", "connection failed!");
             e.printStackTrace();
         }
-        return Db_list;
+        return Db_list.toArray(new Offer[Db_list.size()]);
     }
 }

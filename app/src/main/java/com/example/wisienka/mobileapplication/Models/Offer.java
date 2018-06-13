@@ -1,6 +1,8 @@
 package com.example.wisienka.mobileapplication.Models;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import com.example.wisienka.mobileapplication.Adapters.RecyclerViewAdapter;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by Wisienka on 2018-04-22.
@@ -56,7 +59,13 @@ public class Offer {
         final TextView addressView = (TextView)holder.getMyElementView().findViewById(R.id.offer_address);
         addressView.setText(this.address);
         final ImageView imageView = (ImageView)holder.getMyElementView().findViewById(R.id.offer_picture);
-        imageView.setImageDrawable(ContextCompat.getDrawable(mainActivityContext, R.drawable.no_offer_image_icon));
+        if (pic_url == null)
+            imageView.setImageDrawable(ContextCompat.getDrawable(mainActivityContext, R.drawable.no_offer_image_icon));
+        else
+            Picasso.with(mainActivityContext)
+                    .load(pic_url)
+                    //.resize(imageView.getWidth(),imageView.getHeight())
+                    .into(imageView);
         final TextView priceView = (TextView)holder.getMyElementView().findViewById(R.id.offer_price);
         priceView.setText(String.valueOf(this.price));
     }
@@ -76,6 +85,9 @@ public class Offer {
         this.title = title;
     }
 
+    public String getOffer_url() {
+        return offer_url;
+    }
 
     public double getArea() {
         return area;

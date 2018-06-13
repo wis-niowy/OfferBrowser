@@ -59,6 +59,9 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
     private Polyline currentPolyline;
     private List<Polygon> drawnPolygons;
 
+    double initialLatitude = 52.237049;
+    double initialLongitude = 21.017532;
+
     private boolean wasCreated = false;
 
     @Override
@@ -123,7 +126,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
 
         Log.v(LOGTAG, "map is ready");
 
-        LatLng warsaw = new LatLng(52.237049,21.017532);
+        LatLng warsaw = new LatLng(initialLatitude, initialLongitude);
         //map.addMarker(new MarkerOptions().position(warsaw).title("Marker in Warsaw"));
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -214,6 +217,7 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
     private void initFloatingActionButton(View view){
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -247,8 +251,8 @@ public class MapTabFragment extends Fragment implements OnMapReadyCallback {
         map.clear();
         for (Offer offer : offerList){
             offer.SetMarker(map);
-            averageLat += offer.getLocation().latitude;
-            averageLong += offer.getLocation().longitude;
+            averageLat += offer.getLocation() != null ? offer.getLocation().latitude : initialLatitude;
+            averageLong += offer.getLocation() != null ? offer.getLocation().longitude : initialLongitude;
         }
         averageLat /= offerList.size();
         averageLong /= offerList.size();

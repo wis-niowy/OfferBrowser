@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileApplication</string>
+    <string name="app_name">Offer Browser</string>
     <string name="map_tab_name">Map</string>
     <string name="result_list_tab_name">Result list</string>
     <string name="filter_pref_section">Filters</string>
